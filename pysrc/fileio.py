@@ -8,7 +8,7 @@ import sys
 sys.path.append(".")
 from typing import Any
 
-def write_table(filename:str, data:dict[str, dict[str, Any]], null_value:str="NA") -> str:
+def write_table(filepath:str, data:dict[str, dict[str, Any]], null_value:str="NA") -> str:
     """Assumes that each subdict has the same keys as the root dict
     Ex: data = {
         KeyA: {KeyA: value, KeyB: value},
@@ -25,11 +25,11 @@ def write_table(filename:str, data:dict[str, dict[str, Any]], null_value:str="NA
             file_contents += f"\t{num}"
         file_contents += "\n"
     
-    with open(filename, "w") as f:
+    with open(filepath, "w") as f:
         f.write(file_contents)
     return file_contents
 
-def write_md_table(filename:str, data:dict[str, dict[str, Any]], decimals:int=3, null_value:str="NA") -> str:
+def write_md_table(filepath:str, data:dict[str, dict[str, Any]], decimals:int=3, null_value:str="NA") -> str:
     headers = data.keys()
     file_contents = f"||{"|".join(headers)}|\n"
     file_contents += f"|{"---|" * (len(headers)+1)}\n"
@@ -41,12 +41,12 @@ def write_md_table(filename:str, data:dict[str, dict[str, Any]], decimals:int=3,
             file_contents += f"|{num}"
         file_contents += "|\n"
     
-    with open(filename, "w") as f:
+    with open(filepath, "w") as f:
         f.write(file_contents)
     return file_contents
     
-def read_table(filename:str, null_value:str="NA") -> dict[str, dict[str, float|None]]:
-    with open(filename, "r") as f:
+def read_table(filepath:str, null_value:str="NA") -> dict[str, dict[str, float|None]]:
+    with open(filepath, "r") as f:
         lines = f.read().split("\n")
 
         distribution_dict:dict[str, dict[str, float|None]] = {}
@@ -55,15 +55,15 @@ def read_table(filename:str, null_value:str="NA") -> dict[str, dict[str, float|N
         for line in lines[1:]:
             row = line.split("\t")
             for i, value in enumerate(row[1:]):
-                key1 = row[0]
-                key2 = column_headers[i]
+                key1 = column_headers[i]
+                key2 = row[0]
                 if key1 not in distribution_dict:
                     distribution_dict[key1] = {}
                 distribution_dict[key1][key2] = None if value == null_value else float(value)
         
         return distribution_dict
 
-def test_write_read(filename:str, data:dict[str, dict[str, float|None]]) -> bool:
-    write_table(filename, data)
-    output = read_table(filename)
+def test_write_read(filepath:str, data:dict[str, dict[str, float|None]]) -> bool:
+    write_table(filepath, data)
+    output = read_table(filepath)
     return output == data
