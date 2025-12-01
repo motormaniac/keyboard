@@ -16,13 +16,46 @@ key_list:list[str] = [
 
 class CombinationKey:
     # constants
-    CONSTANTS_CALCULATED:bool = False
-    MAX_VALUE:float
-    COMBINATION_KEY_DATA:dict[str, dict[str, float]]
+    """Produces a matrix that represents the complexity between two keys. Normalized value (0-1) where 1 is preferrable.
+    Example Table:
+    data = {
+        KeyA:{
+            KeyA:None,
+            KeyB:0.1,
+            KeyC:0.2,
+        },
+        KeyB:{
+            KeyA:0.1,
+            KeyB:None,
+            KeyC:0.3,
+        },
+        KeyC:{
+            KeyA:0.2,
+            KeyB:0.3,
+            KeyC:None,
+        }
+    }
+    The combination of the same keys is always None.
+    Note order does not matter. data[KeyA][KeyB] == data[KeyB][KeyA]
 
+    KeyCodes are represented by a three digit string (000).
+    - first digit row (0-2): 0 is bottom row, 2 is top row
+    - second digit column (0-4): 0 is left (pinkie), 4 and 5 are on the right (index)
+    - third column layer (0-1): Which layer of letters. Pressing space switches layers
+    """
     def __init__(self) -> None:
-        self.max_value = self.get_distance_max()
-        self.combination_key_data = self.get_combination_key_data()
+        self._combination_key_distances = self.get_combination_key_distances()
+        self.max_distance = max(
+            [max(
+                [distance for distance in val.values() if distance is not None]
+            ) for val in self._combination_key_distances.values()]
+        )
+        self.combination_key_data:dict[str, dict[str, float|None]] = dict(\
+            [(key1, \
+                dict([(key2, None if value is None else (float(value) / self.max_distance))\
+                for key2, value in subdict.items()])\
+            ) for key1, subdict in self._combination_key_distances.items()]\
+        )
 
     # Keycode is 110.
     # first 0-2 is row bottom to top, second 0-4 is column left to right, third character 0-1 is swap layer
@@ -81,15 +114,16 @@ class CombinationKey:
                 distances.append(distance)
         return max(distances)
 
-    def normalize_distance(self, distance:float) -> float:
-        return distance / self.max_value
-
-    def get_combination_key_data(self) -> dict[str, dict[str, float]]:
-        output:dict[str, dict[str, float]] = {}
+    def get_combination_key_distances(self) -> dict[str, dict[str, float|None]]:
+        output:dict[str, dict[str, float|None]] = dict([(key, {}) for key in key_list])
         for i, key1 in enumerate(key_list):
-            output[key1] = {}
-            for j, key2 in enumerate(key_list, 0):
+            for j, key2 in enumerate(key_list, i):
+                if key1 == key2:
+                    output[key1][key2] = None
+                    continue
                 # If you wanted to remove redundancies, iterate starting from i instead of 0
                 distance = self.calc_key_distance(key1, key2)
-                output[key1][key2] = self.normalize_distance(distance)
+                output[key1][key2] = distance
+                output[key2][key1] = distance
         return output
+    

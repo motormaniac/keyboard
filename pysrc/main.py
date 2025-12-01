@@ -24,4 +24,10 @@ def write_combination_letter_data() -> None:
     combination_letter = lettermap.CombinationLetter("data/google-books-common-words.txt")
     fileio.write_table("data/combination_letter_data.txt", combination_letter.combination_letter_data)
 
-write_combination_letter_data()
+def write_combination_letter_md_data() -> None:
+    combination_letter = lettermap.CombinationLetter("data/google-books-common-words.txt")
+    fileio.write_md_table("data/combination_letter_data.md", combination_letter.combination_letter_data)
+
+def test_write_read() -> None:
+    combination_letter = lettermap.CombinationLetter("data/google-books-common-words.txt")
+    print(fileio.test_write_read("test.txt", combination_letter.combination_letter_data))

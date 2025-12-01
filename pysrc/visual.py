@@ -55,8 +55,8 @@ class KeyDisplay:
             return True
 
 def draw_weight(key1:KeyDisplay, key2:KeyDisplay, show_text:bool = False) -> None:
-    weight = keymap.calc_key_distance(key1.keycode, key2.keycode)
-    fill_color = hsb_to_hex(0, 1.0, keymap.normalize_distance(weight))
+    weight = combination_key.combination_key_data[key1.keycode][key2.keycode]
+    fill_color = hsb_to_hex(0, 1.0, weight)
     key1_x, key1_y = key1.get_real_pos()
     key2_x, key2_y = key2.get_real_pos()
     canvas.create_line(*key1.get_real_pos(), *key2.get_real_pos(),fill=fill_color, width=2)
@@ -94,6 +94,8 @@ def update_loop(delay:int = 1000) -> None:
     key_display_list = key_display_list[1:] + [key_display_list[0]]
     
     root.after(delay, lambda: update_loop(delay))
+
+combination_key = keymap.CombinationKey()
 
 # draw_all_weights()
 update_loop()

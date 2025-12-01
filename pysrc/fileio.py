@@ -8,7 +8,7 @@ import sys
 sys.path.append(".")
 from typing import Any
 
-def write_table(filename:str, data:dict[str, dict[str, Any]]) -> str:
+def write_table(filename:str, data:dict[str, dict[str, Any]], null_value:str="NA") -> str:
     """Assumes that each subdict has the same keys as the root dict
     Ex: data = {
         KeyA: {KeyA: value, KeyB: value},
@@ -20,21 +20,24 @@ def write_table(filename:str, data:dict[str, dict[str, Any]]) -> str:
     for i, key1 in enumerate(headers):
         file_contents += f"{key1}"
         for key2 in headers:
-            file_contents += f"\t{data[key1][key2]}"
+            value = data[key1][key2]
+            num = null_value if value is None else value
+            file_contents += f"\t{num}"
         file_contents += "\n"
     
     with open(filename, "w") as f:
         f.write(file_contents)
     return file_contents
 
-def write_md_table(filename:str, data:dict[str, dict[str, Any]], decimals:int=3) -> str:
+def write_md_table(filename:str, data:dict[str, dict[str, Any]], decimals:int=3, null_value:str="NA") -> str:
     headers = data.keys()
     file_contents = f"||{"|".join(headers)}|\n"
     file_contents += f"|{"---|" * (len(headers)+1)}\n"
     for i, key1 in enumerate(headers):
         file_contents += f"|**{key1}**"
         for key2 in headers:
-            num = round(data[key1][key2], decimals)
+            value = data[key1][key2]
+            num = null_value if value is None else round(value, decimals)
             file_contents += f"|{num}"
         file_contents += "|\n"
     
@@ -42,11 +45,11 @@ def write_md_table(filename:str, data:dict[str, dict[str, Any]], decimals:int=3)
         f.write(file_contents)
     return file_contents
     
-def read_table(filename:str) -> dict[str, dict[str, float]]:
+def read_table(filename:str, null_value:str="NA") -> dict[str, dict[str, float|None]]:
     with open(filename, "r") as f:
         lines = f.read().split("\n")
 
-        distribution_dict:dict[str, dict[str, float]] = {}
+        distribution_dict:dict[str, dict[str, float|None]] = {}
 
         column_headers = lines[0].split("\t")[1:]
         for line in lines[1:]:
@@ -56,6 +59,11 @@ def read_table(filename:str) -> dict[str, dict[str, float]]:
                 key2 = column_headers[i]
                 if key1 not in distribution_dict:
                     distribution_dict[key1] = {}
-                distribution_dict[key1][key2] = float(value)
+                distribution_dict[key1][key2] = None if value == null_value else float(value)
         
         return distribution_dict
+
+def test_write_read(filename:str, data:dict[str, dict[str, float|None]]) -> bool:
+    write_table(filename, data)
+    output = read_table(filename)
+    return output == data
