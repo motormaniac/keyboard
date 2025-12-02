@@ -1,4 +1,4 @@
-|Z|SPACE|U|_|_||R|SPACE|V|X|Q|
+|X|V|H|C|M||Z|_|K|G|W|
 |---|---|---|---|---|---|---|---|---|---|---|
-|I|O|A|E|G||L|H|D|S|B|
-|K|P|T|Y|J||M|C|N|F|W|
+|E|A|SPACE|T|R||N|I|SPACE|S|D|
+|L|O|U|F|P||B|Y|_|J|Q|

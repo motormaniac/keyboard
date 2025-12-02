@@ -73,9 +73,10 @@ class CombinationKey:
                 [distance for distance in val.values() if distance is not None]
             ) for val in self._combination_key_distances.values()]
         )
+        # normalize values and flip range (0-1 becomes 1-0)
         self.combination_key_data:dict[str, dict[str, float|None]] = dict(\
             [(key1, \
-                dict([(key2, None if value is None else (float(value) / self.max_distance))\
+                dict([(key2, None if value is None else 1 - (float(value) / self.max_distance))\
                 for key2, value in subdict.items()])\
             ) for key1, subdict in self._combination_key_distances.items()]\
         )

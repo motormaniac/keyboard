@@ -10,7 +10,7 @@ mod graph;
 use std::fs;
 
 // How many times to generate the next population
-const GENERATIONS:usize = 100;
+const GENERATIONS:usize = 80;
 
 fn main() {
     let all_data = fileio::get_all_data();

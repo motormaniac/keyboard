@@ -1,3 +1,13 @@
 import pandas as pd
-layout_df = pd.read_csv("data/layout_data.txt", delimiter="\t")
-print(layout_df.head())
+import matplotlib.pyplot as plt
+
+filename = "layout_data/layout_data1.txt"
+
+layout_df = pd.read_csv(filename, delimiter="\t")
+plt.plot(layout_df.index, layout_df["average fitness"], color="black")
+plt.plot(layout_df.index, layout_df["top percent average fitness"], color="blue")
+plt.plot(layout_df.index, layout_df["best fitness"], color="red")
+plt.xlabel("Generations")
+plt.ylabel("Fitness")
+plt.grid(True, alpha=0.3)
+plt.show()
