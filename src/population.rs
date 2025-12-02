@@ -13,11 +13,11 @@ const POPULATION_SIZE:usize = 100000;
 const TOP_PERCENTILE:f64 = 0.10;
 /// random_percentile = what percent of random parents to select
 const RANDOM_PERCENTILE:f64 = 0.4;
-// When picking a random parent, how many random things to choose from before picking the best one out of those
+// How many ADDITIONAL random parents to choose for crossover (the top percentile is already included for crossover)
 // MUST BE GREATER THAN 0
 const RANDOM_PICK_AMOUNT:usize = 3;
 /// mutate_chance = chance for an individual to mutate (switch once)
-const MUTATE_CHANCE:f64 = 0.01;
+const MUTATE_CHANCE:f64 = 0.03;
 
 //List of Individuals. Individuals are sorted in descending order (highest fitness first)
 impl Population {
@@ -82,6 +82,7 @@ impl Population {
         //choose parents for the crossover step
         let parent_size = (self.individuals.len() as f64 * RANDOM_PERCENTILE) as usize;
         let mut new_parents:Vec<&Individual> = Vec::new();
+        new_parents.extend(self.individuals[0..split_index].iter());
         for _ in 0..parent_size {
             //for each parent, pick [quantity] random individuals and pick the best
             new_parents.push(self.pick_random_parent());

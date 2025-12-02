@@ -1,33 +1,34 @@
-# taken directly from research paper
-# single_key_distribution:list[float] = [
-#     3.73, 3.73, 3.93, 3.15, 1.76,
-#     5.15, 5.25, 5.35, 5.25, 4.05,
-#     3.32, 4.12, 4.22, 3.82, 3.15,
+# # taken directly from research paper
+single_key_distribution:list[float] = [
+    3.73, 3.73, 3.93, 3.15, 1.76,
+    5.15, 5.25, 5.35, 5.25, 4.05,
+    3.32, 4.12, 4.22, 3.82, 3.15,
 
-#     3.73, 3.73, 3.93, 3.15, 1.76,
-#     5.15, 5.25, 5.35, 5.25, 4.05,
-#     3.32, 4.12, 4.22, 3.82, 3.15,
-# ]
+    3.73, 3.73, 3.93, 3.15, 1.76,
+    5.15, 5.25, 5.35, 5.25, 4.05,
+    3.32, 4.12, 4.22, 3.82, 3.15,
+]
 
-# # normalize distribution and prioritize the default layer
-# single_key_distribution = [
-#     (x+0.5) if i < 15 else x 
-#     for i, x in enumerate(single_key_distribution)]
-# single_key_distribution_max = max(single_key_distribution)
-# single_key_distribution = [
-#     x / single_key_distribution_max
-#     for i, x in enumerate(single_key_distribution)]
-# print(single_key_distribution)
+# normalize distribution and prioritize the default layer
+single_key_distribution = [
+    (x+0.5) if i < 15 else x 
+    for i, x in enumerate(single_key_distribution)]
+single_key_distribution_max = max(single_key_distribution)
+single_key_distribution = [
+    x / single_key_distribution_max
+    for x in single_key_distribution]
+print(single_key_distribution)
 
 single_key_distribution = [
-    0.8099706744868036, 0.8099706744868036, 0.8334310850439883, 0.7419354838709679, 0.5788856304985337,
-    0.9765395894428154, 0.9882697947214076, 1.0, 0.9882697947214076, 0.8475073313782991,
-    0.7618768328445749, 0.8557184750733139, 0.8674486803519061, 0.8205278592375367, 0.7419354838709679,
+    0.7230769230769232, 0.7230769230769232, 0.7572649572649572, 0.6239316239316239, 0.3863247863247863,
+    0.9658119658119659, 0.982905982905983, 1.0, 0.982905982905983, 0.7777777777777778,
+    0.652991452991453, 0.7897435897435898, 0.8068376068376069, 0.7384615384615385, 0.6239316239316239,
+    
+    0.6376068376068377, 0.6376068376068377, 0.6717948717948719, 0.5384615384615384, 0.3008547008547009,
+    0.8803418803418804, 0.8974358974358975, 0.9145299145299145, 0.8974358974358975, 0.6923076923076923,
+    0.5675213675213675, 0.7042735042735043, 0.7213675213675214, 0.652991452991453, 0.5384615384615384]
 
-    0.4375366568914956, 0.4375366568914956, 0.46099706744868035, 0.3695014662756599, 0.2064516129032258,
-    0.6041055718475073, 0.6158357771260998, 0.6275659824046921, 0.6158357771260998, 0.47507331378299117,
-    0.3894428152492669, 0.48328445747800586, 0.4950146627565982, 0.44809384164222876, 0.3695014662756599]
-
+    
 key_list:list[str] = [
     "000", "010", "020", "030", "040",
     "100", "110", "120", "130", "140",
@@ -96,7 +97,6 @@ class CombinationKey:
         key1_col = int(key1[1])
         key2_col = int(key2[1])
 
-        # repeating fingers
         if key1[2] != key2[2]: # Using the switch key has a high distance
             distance += 3
         else:
@@ -105,7 +105,7 @@ class CombinationKey:
                 distance += 2
             elif (key1_col == 3 and key2_col == 4) or (key1_col == 4 and key2_col == 3):
                 # Using index twice on adjacent keys
-                distance += 2
+                distance += 3
 
         # locational constraints
 
@@ -115,6 +115,8 @@ class CombinationKey:
         distance += abs(key1_row - key2_row)
         if key1_row != 1 or key2_row != 1:
             # prioritize the homerow
+            distance += 1
+        if key1_row != key2_row:
             distance += 1
 
         # long fingers = middle and index (2,3,4)
@@ -128,6 +130,14 @@ class CombinationKey:
         elif key2_col in [0,1] and key1_col in [2,3,4]\
         and key2_row > key1_row:
             distance += 2
+
+        # I don't like combinations of my fingers on the bottom and middle row
+        # because of staggered keyboard
+        if key1_row == 0 and key2_row == 1 and key2_col - key1_col == 1:
+            distance += 2
+        elif key2_row == 0 and key1_row == 1 and key1_col - key2_col == 1:
+            distance += 2
+
         return distance
 
     def get_distance_max(self) -> float:

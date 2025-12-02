@@ -39,11 +39,13 @@ def get_layout_visual(layout:list[str]) -> str:
 |{layout[5]}|{layout[6]}|{layout[7]}|{layout[8]}|{layout[9]}||{layout[20]}|{layout[21]}|{layout[22]}|{layout[23]}|{layout[24]}|
 |{layout[0]}|{layout[1]}|{layout[2]}|{layout[3]}|{layout[4]}||{layout[15]}|{layout[16]}|{layout[17]}|{layout[18]}|{layout[19]}|
 """
-    
 
 def visualize_keymap() -> None:
-    layout1:list[str] = "L O U F P E A SPACE T R X V H C M B Y _ J Q N I SPACE S D Z _ K G W".split(" ")
+    layout1:list[str] = "O U P M F E A SPACE T R X V H C L Y Q _ B J N I SPACE S D Z _ K G W".split(" ")
+    layout2:list[str] = "K Y X V _ SPACE E A S D B P R L M G W Q Z _ SPACE T I N H J F O U C".split(" ")
     with open("data/layout_visual.md", "w") as f:
-        f.write(f"{get_layout_visual(layout1)}"
+        f.write(f"{get_layout_visual(layout1)}\n\n{get_layout_visual(layout2)}"
 )
+# write_single_key_data()
+# write_combination_key_data()
 visualize_keymap()
