@@ -1,6 +1,7 @@
 use rand;
 use crate::fileio::AllData;
 
+#[derive(Debug)]
 pub struct Individual {
     pub layout:Vec<&'static str>,
     pub fitness:f64,

@@ -62,6 +62,11 @@ pub fn read_single_data(filepath:& str) -> HashMap<String, f64> {
 }
 
 pub fn get_all_data() -> AllData {
+    let contents:&str = &read_to_string("data/single_key_data.txt")
+        .expect("Invalid filepath");
+    let words:Vec<&str> = contents.split("\t").collect();
+    let single_key_data:Vec<f64> = words.iter().map(|x| (*x).parse().unwrap()).collect();
+
     AllData { 
         single_key_names: vec![
             "000", "010", "020", "030", "040",
@@ -71,15 +76,7 @@ pub fn get_all_data() -> AllData {
             "101", "111", "121", "131", "141",
             "201", "211", "221", "231", "241",
         ],
-        single_key_data: vec![
-            3.73, 3.73, 3.93, 3.15, 1.76,
-            5.15, 5.25, 5.35, 5.25, 4.05,
-            3.32, 4.12, 4.22, 3.82, 3.15,
-
-            3.73, 3.73, 3.93, 3.15, 1.76,
-            5.15, 5.25, 5.35, 5.25, 4.05,
-            3.32, 4.12, 4.22, 3.82, 3.15,
-        ],
+        single_key_data,
         combination_key_data: read_combination_data("data/combination_key_data.txt"),
         single_letter_data: read_single_data("data/single_letter_data.txt"),
         combination_letter_data: read_combination_data("data/combination_letter_data.txt")

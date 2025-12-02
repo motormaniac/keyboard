@@ -12,7 +12,7 @@ const POPULATION_SIZE:usize = 100000;
 // top_percentile = what percent of top performers from this generation move to the next
 const TOP_PERCENTILE:f64 = 0.10;
 /// random_percentile = what percent of random parents to select
-const RANDOM_PERCENTILE:f64 = 0.2;
+const RANDOM_PERCENTILE:f64 = 0.4;
 // When picking a random parent, how many random things to choose from before picking the best one out of those
 // MUST BE GREATER THAN 0
 const RANDOM_PICK_AMOUNT:usize = 3;
@@ -118,6 +118,11 @@ impl Population {
             };
         }
         new_population.individuals.append(&mut crossover_population);
+
+        //sort by fitness
+        new_population.individuals.sort_by(
+            |a, b| a.fitness.partial_cmp(&b.fitness).unwrap());
+        new_population.individuals.reverse();
 
         let mut accum_fitness:f64 = 0f64;
         for indiv in &new_population.individuals {

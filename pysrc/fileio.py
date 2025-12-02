@@ -44,7 +44,14 @@ def write_md_table(filepath:str, data:dict[str, dict[str, Any]], decimals:int=3,
     with open(filepath, "w") as f:
         f.write(file_contents)
     return file_contents
-    
+
+def write_single(filepath:str, data:dict[str, float]) -> str:
+    with open(filepath, "w") as f:
+        text_content = "LETTER\tCOUNT\n"
+        text_content += "\n".join([f"{letter}\t{count}" for letter, count in data.items()])
+        f.write(text_content)
+        return text_content
+
 def read_table(filepath:str, null_value:str="NA") -> dict[str, dict[str, float|None]]:
     with open(filepath, "r") as f:
         lines = f.read().split("\n")
