@@ -1,6 +1,7 @@
 use std::io::Write;
 use crate::individual::Individual;
 use crate::fileio::AllData;
+use rayon::prelude::*;
 
 pub struct Population {
     pub individuals:Vec<Individual>,
@@ -86,27 +87,24 @@ impl Population {
             new_parents.push(self.pick_random_parent());
         }
 
+        println!("Applying Crossover");
         //apply crossover to consecutive pairs of parents in new_parents.
         //If all parents are exhausted, but population is not full, loop through parents again
 
-        let mut crossover_population:Vec<Individual> = Vec::new();
-        let mut index:usize = 0;
-        print!("Applying Crossover: 0%");
-        while crossover_population.len() < POPULATION_SIZE - split_index{
-            if index%1000 == 0 {
-                let progress = (100f32 * index as f32 / (POPULATION_SIZE - split_index) as f32).round();
-                print!("\rApplying Crossover: {progress}%");
-                std::io::stdout().flush();
-            }
-            let i = index % new_parents.len();
-            let (new_indiv1, new_indiv2) = 
-                Individual::crossover(new_parents[i], new_parents[i+1], all_data);
-            crossover_population.push(new_indiv1);
-            crossover_population.push(new_indiv2);
-            index += 2;
-        }
-        println!("\rApplying Crossover: 100%");
-        
+        let num_pairs = POPULATION_SIZE - split_index / 2; // Round up for odd numbers
+        let mut crossover_population: Vec<Individual> = (0..num_pairs)
+            .into_par_iter()
+            .flat_map(|pair_index| {
+                let i = (pair_index * 2) % new_parents.len();
+                let (child1, child2) = Individual::crossover(
+                    new_parents[i], 
+                    new_parents[i + 1], 
+                    all_data
+                );
+                vec![child1, child2]
+            })
+            .collect();
+
         //remove excess members
         while crossover_population.len() > POPULATION_SIZE - split_index {
             crossover_population.pop();

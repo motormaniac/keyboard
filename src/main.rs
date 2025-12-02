@@ -24,10 +24,15 @@ fn main() {
     // );
     // println!("{:?}", indiv.fitness);
     let mut population = Population::random_population(&all_data);
+    let mut last_average_fitness = population.average_fitness;
     for i in 0..GENERATIONS {
         println!("\nMaking generation: {i}");
         population = population.create_next_population(&all_data);
+        println!("Improvement: {:?}", population.average_fitness - last_average_fitness);
+        last_average_fitness = population.average_fitness;
+
+        let this_best_individual = population.individuals.last().unwrap();
+        println!("This best layout: {:?}", this_best_individual.layout);
     }
     let best_individual = population.individuals.last().unwrap();
-    fs::write("data/best_layout.txt", format!("{:?}",best_individual.layout));
 }

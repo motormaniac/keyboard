@@ -1,8 +1,8 @@
 # taken directly from research paper
 single_key_distribution:list[float] = [
-    3.32, 4.12, 4.22, 3.82, 3.15,
-    5.15, 5.25, 5.35, 5.25, 4.05,
     3.73, 3.73, 3.93, 3.15, 1.76,
+    5.15, 5.25, 5.35, 5.25, 4.05,
+    3.32, 4.12, 4.22, 3.82, 3.15,
 ]
 
 key_list:list[str] = [
@@ -74,7 +74,7 @@ class CombinationKey:
 
         # repeating fingers
         if key1[2] != key2[2]: # Using the switch key has a high distance
-            distance += 2
+            distance += 3
         else:
             if key1_col == key2_col:
                 # using the same finger

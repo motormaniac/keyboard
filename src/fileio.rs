@@ -72,13 +72,13 @@ pub fn get_all_data() -> AllData {
             "201", "211", "221", "231", "241",
         ],
         single_key_data: vec![
-            3.32, 4.12, 4.22, 3.82, 3.15,
-            5.15, 5.25, 5.35, 5.25, 4.05,
             3.73, 3.73, 3.93, 3.15, 1.76,
+            5.15, 5.25, 5.35, 5.25, 4.05,
+            3.32, 4.12, 4.22, 3.82, 3.15,
 
-            3.32, 4.12, 4.22, 3.82, 3.15,
-            5.15, 5.25, 5.35, 5.25, 4.05,
             3.73, 3.73, 3.93, 3.15, 1.76,
+            5.15, 5.25, 5.35, 5.25, 4.05,
+            3.32, 4.12, 4.22, 3.82, 3.15,
         ],
         combination_key_data: read_combination_data("data/combination_key_data.txt"),
         single_letter_data: read_single_data("data/single_letter_data.txt"),

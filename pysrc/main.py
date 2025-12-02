@@ -31,3 +31,15 @@ def write_combination_letter_md_data() -> None:
 def test_write_read() -> None:
     combination_letter = lettermap.CombinationLetter("data/google-books-common-words.txt")
     print(fileio.test_write_read("test.txt", combination_letter.combination_letter_data))
+
+def visualize_keymap() -> None:
+    key_map:list[str] = ["J", "B", "S", "L", "W", "I", "O", "E", "A", "Y", "H", "SPACE", "X", "Q", "Z", "K", "M", "T", "N", "F", "U", "P", "C", "D", "G", "R", "SPACE", "V", "_", "_"]
+    # key_map:list[str] = keymap.key_list
+    with open("data/layout_visual.md", "w") as f:
+        f.write(f"""|{key_map[10]}|{key_map[11]}|{key_map[12]}|{key_map[13]}|{key_map[14]}||{key_map[25]}|{key_map[26]}|{key_map[27]}|{key_map[28]}|{key_map[29]}|
+|---|---|---|---|---|---|---|---|---|---|---|
+|{key_map[5]}|{key_map[6]}|{key_map[7]}|{key_map[8]}|{key_map[9]}||{key_map[20]}|{key_map[21]}|{key_map[22]}|{key_map[23]}|{key_map[24]}|
+|{key_map[0]}|{key_map[1]}|{key_map[2]}|{key_map[3]}|{key_map[4]}||{key_map[15]}|{key_map[16]}|{key_map[17]}|{key_map[18]}|{key_map[19]}|
+""")
+
+write_combination_key_data()
