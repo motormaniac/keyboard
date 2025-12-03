@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Grid</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        
+        .instructions-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .instructions-overlay.hidden {
+            display: none !important;
+        }
+        
+        .instructions-box {
+            background-color: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            text-align: center;
+        }
+        
+        .instructions-box h2 {
+            margin-top: 0;
+            color: #333;
+            font-size: 28px;
+        }
+        
+        .instructions-box p {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .ok-button {
+            padding: 15px 50px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        
+        .ok-button:hover {
+            background-color: #45a049;
+        }
+        
+        .grids-wrapper {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .grid-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .grid-label {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(5, 80px);
+            grid-template-rows: repeat(3, 80px);
+            gap: 10px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .grid-button {
+            font-size: 24px;
+            font-weight: bold;
+            border: 2px solid #333;
+            border-radius: 8px;
+            background-color: #fff;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .option-container {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .option-button {
+            padding: 20px 60px;
+            font-size: 20px;
+            font-weight: bold;
+            border: 3px solid #333;
+            border-radius: 12px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        
+        .option-button:hover {
+            background-color: #45a049;
+        }
+        
+        .option-button:nth-child(2) {
+            background-color: #2196F3;
+        }
+        
+        .option-button:nth-child(2):hover {
+            background-color: #0b7dda;
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions-overlay" id="instructionsOverlay">
+        <div class="instructions-box">
+            <h2>Welcome!</h2>
+            <p>This is an interactive grid interface. Use the grids to make your selections, then choose between the two options at the bottom.</p>
+            <button class="ok-button" onclick="document.getElementById('instructionsOverlay').classList.add('hidden')">OK</button>
+        </div>
+    </div>
+    
+    <div class="grids-wrapper">
+        <div class="grid-section">
+            <div class="grid-label">Grid 1</div>
+            <div class="grid-container" id="grid1"></div>
+        </div>
+        
+        <div class="grid-section">
+            <div class="grid-label">Grid 2</div>
+            <div class="grid-container" id="grid2"></div>
+        </div>
+    </div>
+    
+    <div class="option-container">
+        <button class="option-button" onclick="alert('Option A selected!')">Option A</button>
+        <button class="option-button" onclick="alert('Option B selected!')">Option B</button>
+    </div>
+
+    <script>
+        // Create both grids with letters A-O
+        const letters = 'ABCDEFGHIJKLMNO';
+        
+        function createGrid(gridId) {
+            const grid = document.getElementById(gridId);
+            for (let y = 0; y < 3; y++) {
+                for (let x = 0; x < 5; x++) {
+                    const div = document.createElement('div');
+                    div.className = 'grid-button';
+                    div.textContent = letters[y * 5 + x];
+                    div.dataset.x = x;
+                    div.dataset.y = y;
+                    grid.appendChild(div);
+                }
+            }
+        }
+        
+        createGrid('grid1');
+        createGrid('grid2');
+        
+        // Function to change button color by coordinates and grid number
+        function setButtonColor(gridNum, x, y, color) {
+            const grid = document.getElementById('grid' + gridNum);
+            const buttons = grid.querySelectorAll('.grid-button');
+            buttons.forEach(button => {
+                if (parseInt(button.dataset.x) === x && parseInt(button.dataset.y) === y) {
+                    button.style.backgroundColor = color;
+                }
+            });
+        }
+        
+        // Example usage:
+        setButtonColor(1, 0, 0, 'red');     // Colors top-left button (A) red in Grid 1
+        // setButtonColor(2, 4, 2, 'blue');    // Colors bottom-right button (O) blue in Grid 2
+        // setButtonColor(1, 2, 1, '#FFD700'); // Colors middle button (H) gold in Grid 1
+    </script>
+</body>
+</html>

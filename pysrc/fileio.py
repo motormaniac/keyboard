@@ -52,6 +52,25 @@ def write_single(filepath:str, data:dict[str, float]) -> str:
         f.write(text_content)
         return text_content
 
+def write_combination_ordered_chart(filepath:str, data:dict[str, dict[str, float|None]]) -> str:
+    letter_combos:set[str] = set()
+    new_data:list[tuple[str, float]] = []
+    for letter1, subdict in data.items():
+        for letter2, value in subdict.items():
+            letter_combo = letter1 + letter2
+            if letter_combo in letter_combos or letter2 + letter1 in letter_combos:
+                continue
+            if value is None:
+                continue
+            letter_combos.add(letter_combo)
+            new_data.append((letter_combo, value))
+    new_data = sorted(new_data, key=lambda x: x[1], reverse=True)
+
+    with open(filepath, "w") as f:
+        content:str = "KEY\tVALUE\n"
+        content += "\n".join([f"{key}\t{value}" for key, value in new_data])
+        f.write(content)
+        
 def read_table(filepath:str, null_value:str="NA") -> dict[str, dict[str, float|None]]:
     with open(filepath, "r") as f:
         lines = f.read().split("\n")

@@ -17,7 +17,7 @@ single_key_distribution_max = max(single_key_distribution)
 single_key_distribution = [
     x / single_key_distribution_max
     for x in single_key_distribution]
-print(single_key_distribution)
+# print(single_key_distribution)
 
 single_key_distribution = [
     0.7230769230769232, 0.7230769230769232, 0.7572649572649572, 0.6239316239316239, 0.3863247863247863,
@@ -112,12 +112,13 @@ class CombinationKey:
         # moving two rows is a lot
         # moving one row is a little
         # same row is no cost
-        distance += abs(key1_row - key2_row)
         if key1_row != 1 or key2_row != 1:
             # prioritize the homerow
             distance += 1
-        if key1_row != key2_row:
+        if abs(key1_row - key2_row) == 1:
             distance += 1
+        elif abs(key1_row - key2_row) == 2: # I really don't want to jump 2 rows
+            distance += 3
 
         # long fingers = middle and index (2,3,4)
         # short fingers = pinkie and ring (0,1)
