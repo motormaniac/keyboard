@@ -1,0 +1,285 @@
+<html>
+    <style>
+        body {
+            display:flex;
+            align-items: center;
+            justify-content: center;
+            flex-flow:wrap;
+            margin:0;
+            background-color:antiquewhite;
+        }
+        #letter-container, #input-container{
+            display:flex;
+            width:100%;
+            flex-direction: row;
+            justify-content: center;
+        }
+        .letter {
+            padding:0.5rem;
+            height:100%;
+            font-size: x-large;
+            border-bottom: 1px solid black;
+        }
+        .letter-neutral {
+            color: gray;
+        }
+        .letter-incorrect {
+            color:rgb(255, 0, 0);
+            background-color: rgb(255, 213, 213);
+        }
+        .letter-correct{
+            color:green
+        }
+        .letter-select {
+            background-color: rgb(219, 209, 209);
+        }
+        .input {
+            color:gray;
+            margin:0.5rem;
+        }
+    </style>
+    <body>
+        <div id="letter-container"></div>
+        <script>
+            const KEY_NAMES = [
+                "z","x","c","v","b","a","s","d","f","g","q","w","e","r","t","_"
+            ]
+            // to make sure all combinations are covered, make sure the algorithm picks all possible options before repeating.
+            const SEQUENCE_LENGTH = 5
+            // take in a list of letters
+            const letterContainer = document.getElementById("letter-container")
+            const letters = letterContainer.getElementsByClassName("letter") //array of letter elements
+            const REPEAT_AMOUNT = 3
+
+            //removes the first item that matches the value
+            const arrayRemove = (arr, value) => {
+                for (i=0; i<arr.length; i++) {
+                    if (arr[i] === value) {
+                        arr.splice(i, 1)
+                        return arr
+                    }
+                }
+            }
+
+            let combinationOptions = []
+            const resetCombinations = () => {
+                combinationOptions = []
+                for (let key1 of KEY_NAMES) {
+                    for (let key2 of KEY_NAMES) {
+                        combinationOptions.push(key1 + key2)
+                    }
+                }
+            }
+            resetCombinations()
+
+            // return a list of length SEQUENCE_LENGTH filled with random letters from KEY_NAMES
+            const chooseLetters = () => {
+                let newSequence = [] // list of single letters. The new sequence to be returned
+                for (let i=0; i<SEQUENCE_LENGTH; i++) {
+                    // all possible sequence pairs that could come next
+                    // list of sequence pairs ex: ["ab", "cd"]
+                    let nextLetterOptions = []
+                    if (newSequence.length === 0) {
+                        if (combinationOptions.length === 0) {
+                            combinationOptions = [...KEY_NAMES]
+                        }
+                        nextLetterOptions = [...combinationOptions]
+                    } else {
+                        //get all available sequence pairs whose first letter matches the most recent letter added to newSequence
+                        for (keyName of combinationOptions) {
+                            if (keyName[0] === newSequence[newSequence.length - 1]) {
+                                nextLetterOptions.push(keyName)
+                            }
+                        }
+                        if (nextLetterOptions.length === 0) {
+                            // if there are no possible next letters, reset combinationOptions and try again
+                            combinationOptions = [...KEY_NAMES]
+                            for (keyName of combinationOptions) {
+                                if (keyName[0] === newSequence[newSequence.length - 1]) {
+                                    nextLetterOptions.push(keyName)
+                                }
+                            }
+                        }
+                    }
+                    // push a random element of nextLetterOptions
+                    random_index = Math.floor(Math.random() * nextLetterOptions.length)
+                    let letterPair = nextLetterOptions[random_index]
+                    newSequence.push(letterPair[1]) // add the second letter of the pair
+                    arrayRemove(combinationOptions, letterPair) // this letterpair won't be used again
+                }
+                return newSequence
+            }
+
+            //clear all letters within letterContainer
+            //container:HTMLElement
+            const clearContainer = () => {
+                while (letterContainer.firstChild) {
+                    letterContainer.removeChild(letterContainer.lastChild);
+                }
+                currentIndex = null
+            }
+
+            // selects which letter the cursor is on
+            // index:int
+            const selectNext = () => {
+                letters[currentIndex].classList.remove("letter-select")
+                letters[currentIndex + 1].classList.add("letter-select")
+                currentIndex += 1
+            }
+            //returns bool: If any of the keys were incorrect
+            const checkForIncorrect = () => {
+                for (let letter of letters) {
+                    if (letter.classList.contains("letter-incorrect")) {
+                        return true
+                    }
+                }
+                return false
+            }
+            /**
+             * //unlike the python data structure, this one is directional ("ab" != "ba")
+             * // Data structure:
+             * {
+             *    key1a: {
+             *         key2a: {"average":float, "datapoints":int}, // "datapoints" = number of datapoints collected
+             *         key2b: {...},
+             *         key2c: {...},
+             *    },
+             *    key1b: {
+             *         key:{...},
+             *         key:{...},
+             *         key:{...},
+             *    },
+             * }
+             */
+            //obj is the datastructure
+                //Modifies and returns obj
+            //time is the time that was just calculated
+            const addTime = (obj, key1, key2, time) => {
+                if (!(key1 in obj)) {
+                    obj[key1] = {[key2]:{"average":time, "datapoints":1}}
+                } else if (!(key2 in obj[key1])) {
+                    obj[key1][key2] = {"average":time, "datapoints":1}
+                } else {
+                    average = obj[key1][key2]["average"]
+                    datapoints = obj[key1][key2]["datapoints"]
+                    //include the new time into the average
+                    obj[key1][key2]["average"] = (average * datapoints + time) / (datapoints + 1)
+                    obj[key1][key2]["datapoints"] += 1
+                }
+                return obj
+            }
+            const testAddTime = () => {
+                let time_obj = {}
+                addTime(time_obj, "1", "1", 1)
+                addTime(time_obj, "1", "1", 2)
+                addTime(time_obj, "1", "2", 1)
+                addTime(time_obj, "1", "2", 2)
+                addTime(time_obj, "2", "1", 1)
+                addTime(time_obj, "2", "1", 2)
+                addTime(time_obj, "2", "2", 1)
+                addTime(time_obj, "2", "2", 2)
+                console.log(time_obj)
+            }
+            
+            let currentSequence = chooseLetters()
+            let currentRepeat = 1
+            let currentIndex = null
+            // the time it took for each sequence pair.
+            // The sequence abc with 3 reptitions would be made of 2x3 array.
+                // Ex: abc -> [(rep1)[ab_time, bc_time], (rep2)[ab_time, bc_time], (rep3)[ab_time, bc_time]]
+            let currentSequenceTimes = []
+            for (i=0; i<REPEAT_AMOUNT; i++) {
+                currentSequenceTimes.push([])
+            }
+            let lastTime = 0
+            let timeData = {}
+
+            const addCurrentSequenceTimes = () => {
+                for (i=0; i<SEQUENCE_LENGTH-1; i++) {
+                    let key1 = letters[i].textContent
+                    let key2 = letters[i+1].textContent
+                    //get the max time out of all the trials
+                    let time = 0
+                    for (j=0; j<REPEAT_AMOUNT; j++) {
+                        let x = currentSequenceTimes[j][i];
+                        if (x > time) {
+                            time = x
+                        }
+                    }
+                    addTime(timeData, key1, key2, time)
+                }
+            }
+
+            // clears then fills the letter container with the letters in currentSequence
+            // currentSequence:array[str] ex: ["a", "b", "c"]
+            const resetSequence = () => {
+                clearContainer()
+                for (letterName of currentSequence) {
+                    // create letter
+                    let newLetter = document.createElement("div")
+                    letterContainer.appendChild(newLetter)
+                    newLetter.classList.add("letter", "letter-neutral")
+                    newLetter.textContent = letterName
+                }
+                letters[0].classList.add("letter-select")
+                currentIndex = 0
+            }
+            resetSequence()
+
+            onkeydown = (keyEvent) => {
+                if (!(KEY_NAMES.includes(keyEvent.key) || keyEvent.key === " ")) {
+                    //disregard invalid inputs
+                    return
+                }
+                
+                const currentLetter = letters[currentIndex]
+                if (keyEvent.key === currentLetter.textContent || 
+                (keyEvent.key === " " && currentLetter.textContent === "_")) {
+                    // if current letter is correct
+                    currentLetter.classList.add("letter-correct")
+                } else {
+                    //refresh line immediately if viewer is incorrect
+                    resetSequence()
+                    //refresh the times only for this rep
+                    currentSequenceTimes[currentRepeat-1] = []
+                    return
+                    // currentLetter.classList.add("letter-incorrect")
+                }
+
+                if (currentIndex === 0) {
+                    lastTime = Date.now()
+                } else {
+                    const currentTime = Date.now()
+                    console.log(currentTime - lastTime)
+                    currentSequenceTimes[currentRepeat-1].push(currentTime - lastTime)
+                    lastTime = currentTime
+                }
+
+                if (currentIndex === letters.length - 1) {
+                    //if at end of sequence
+                    if (currentRepeat === REPEAT_AMOUNT) {
+                        //all repeats completed -> choose a new sequence
+                        currentSequence = chooseLetters()
+                        currentRepeat = 1
+                        resetSequence()
+
+                        addCurrentSequenceTimes()
+                        //since we're starting over with a new sequence, completely reset currentSequenceTimes
+                        // [[],[],[]]
+                        currentSequenceTimes = []
+                        for (i=0; i<REPEAT_AMOUNT; i++) {
+                            currentSequenceTimes.push([])
+                        }
+                    } else {
+                        currentRepeat += 1
+                        resetSequence()
+                    }
+                } else {
+                    //not at end of sequence -> selectNext
+                    selectNext()
+                }
+            }
+            console.log(timeData)
+        </script>
+    </body>
+</html>
