@@ -213,7 +213,7 @@
 
             //optional: text. If text is given, it displays the text. Otherwise, it updates to the default message
             const updateTextOutput = (text) => {
-                textOutput.textContent = `Current Repeats: ${currentRepeat}, Time for last key pair: ${lastDelta}`
+                textOutput.textContent = `Current Repeats: ${currentRepeat}\nTime for last key pair: ${lastDelta}\nPairs Left: ${combinationOptions.length}`
             }
             updateTextOutput()
 
