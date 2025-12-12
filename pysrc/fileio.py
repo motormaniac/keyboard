@@ -8,6 +8,25 @@ import sys
 sys.path.append(".")
 from typing import Any
 
+KEY_NAMES_TO_kEY_CODE = {
+    "z":"00",
+    "x":"01",
+    "c":"02",
+    "v":"03",
+    "b":"04",
+    "a":"10",
+    "s":"11",
+    "d":"12",
+    "f":"13",
+    "g":"14",
+    "q":"20",
+    "w":"21",
+    "e":"22",
+    "r":"23",
+    "t":"24",
+    "_":"SPACE"
+}
+
 def write_table(filepath:str, data:dict[str, dict[str, Any]], null_value:str="NA") -> str:
     """Assumes that each subdict has the same keys as the root dict
     Ex: data = {

@@ -28,7 +28,7 @@
 |P|U|Q|V|X||K|G|_|Z|_|
 
 
-|V|Y|D|L|M||K|W|O|F|C|
+|Z|Y|D|L|M||K|W|O|F|C|
 |---|---|---|---|---|---|---|---|---|---|---|
 |SPACE|E|A|S|R||SPACE|I|T|N|H|
-|P|B|X|Z|_||U|G|Q|J|_|
+|P|B|X|V|_||U|G|Q|J|_|
