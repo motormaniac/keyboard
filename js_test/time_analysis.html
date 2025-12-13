@@ -93,7 +93,7 @@
                     let nextLetterOptions = []
                     if (newSequence.length === 0) {
                         if (combinationOptions.length === 0) {
-                            combinationOptions = [...KEY_NAMES]
+                            resetCombinations()
                         }
                         nextLetterOptions = [...combinationOptions]
                     } else {
@@ -105,7 +105,7 @@
                         }
                         if (nextLetterOptions.length === 0) {
                             // if there are no possible next letters, reset combinationOptions and try again
-                            combinationOptions = [...KEY_NAMES]
+                            resetCombinations()
                             for (keyName of combinationOptions) {
                                 if (keyName[0] === newSequence[newSequence.length - 1]) {
                                     nextLetterOptions.push(keyName)
@@ -113,6 +113,7 @@
                             }
                         }
                     }
+                    console.log(nextLetterOptions)
                     // push a random element of nextLetterOptions
                     random_index = Math.floor(Math.random() * nextLetterOptions.length)
                     let letterPair = nextLetterOptions[random_index]

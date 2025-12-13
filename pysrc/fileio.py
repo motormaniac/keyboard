@@ -8,25 +8,6 @@ import sys
 sys.path.append(".")
 from typing import Any
 
-KEY_NAMES_TO_kEY_CODE = {
-    "z":"00",
-    "x":"01",
-    "c":"02",
-    "v":"03",
-    "b":"04",
-    "a":"10",
-    "s":"11",
-    "d":"12",
-    "f":"13",
-    "g":"14",
-    "q":"20",
-    "w":"21",
-    "e":"22",
-    "r":"23",
-    "t":"24",
-    "_":"SPACE"
-}
-
 def write_table(filepath:str, data:dict[str, dict[str, Any]], null_value:str="NA") -> str:
     """Assumes that each subdict has the same keys as the root dict
     Ex: data = {
@@ -112,3 +93,67 @@ def test_write_read(filepath:str, data:dict[str, dict[str, float|None]]) -> bool
     write_table(filepath, data)
     output = read_table(filepath)
     return output == data
+
+KEY_NAMES_TO_KEY_CODE = {
+    "00":"z",
+    "01":"x",
+    "02":"c",
+    "03":"v",
+    "04":"b",
+    "10":"a",
+    "11":"s",
+    "12":"d",
+    "13":"f",
+    "14":"g",
+    "20":"q",
+    "21":"w",
+    "22":"e",
+    "23":"r",
+    "24":"t",
+    "SPACE":"_",
+}
+
+def read_time_data(filepath:str) -> dict[str, dict[str, float|None]]:
+    from pysrc import keymap
+    output_data:dict[str, dict[str, float|None]] = {}
+
+    # read data from file
+    f = open(filepath, "r")
+    lines = f.read().split("\n")
+    time_data:dict[str, dict[str, float|None]] = {}
+    column_headers = lines[0].split("\t")[1:]
+    for line in lines[1:]:
+        row = line.split("\t")
+        for i, value in enumerate(row[1:]):
+            key1 = column_headers[i]
+            key2 = row[0]
+            if value is None:
+                raise ValueError
+            if key1 not in time_data:
+                time_data[key1] = {}
+            time_data[key1][key2] = float(value.split(",")[0])
+    f.close()
+    print(time_data)
+
+    # generate times for all the key possibilities
+    for key1 in keymap.key_list:
+        for key2 in keymap.key_list:
+            time:float = 0
+            # disregard the switch layer Ex: 000 and 001 --> 00
+            timeKey1 = KEY_NAMES_TO_KEY_CODE[key1[0:2]]
+            timeKey2 = KEY_NAMES_TO_KEY_CODE[key2[0:2]]
+            if key1[2] != key2[2]:
+                # Calculate the time with using space to switch
+                time1 = time_data[timeKey1]["_"]
+                time2 = time_data["_"][timeKey2]
+                if time1 is None or time2 is None:
+                    raise ValueError
+            else:
+                x = time_data[timeKey1][timeKey2]
+                if x is None:
+                    raise ValueError
+                time = x
+            if not key1 in output_data:
+                output_data[key1] = {}
+            output_data[key1][key2] = time
+    return output_data
