@@ -148,6 +148,7 @@ def read_time_data(filepath:str) -> dict[str, dict[str, float|None]]:
                 time2 = time_data["_"][timeKey2]
                 if time1 is None or time2 is None:
                     raise ValueError
+                time = time1 + time2
             else:
                 x = time_data[timeKey1][timeKey2]
                 if x is None:

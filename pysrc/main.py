@@ -59,6 +59,6 @@ def visualize_keymap() -> None:
 
 def write_edited_time_data() -> None:
     data = fileio.read_time_data("time_data/time_data_combined.txt")
-    fileio.write_table("time_data/edited_time_data", data)
+    fileio.write_table("data/edited_time_data.txt", data)
 
 write_edited_time_data()
