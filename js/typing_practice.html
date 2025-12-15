@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Practice</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #1e1e1e;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .text-display {
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 10px;
+            font-size: 32px;
+            letter-spacing: 3px;
+            max-width: 800px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .letter {
+            display: inline-block;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .letter.typed {
+            color: #4ade80;
+        }
+
+        .letter.current {
+            background: #3b82f6;
+            color: white;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        .letter.untyped {
+            color: #666;
+        }
+
+        .keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .key {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(180deg, #4a4a4a 0%, #3a3a3a 100%);
+            border: 2px solid #5a5a5a;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            transition: all 0.05s;
+        }
+
+        .key.active {
+            background: #3b82f6;
+            border-color: #60a5fa;
+            transform: translateY(2px);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .row:nth-child(2) {
+            margin-left: 30px;
+        }
+
+        .row:nth-child(3) {
+            margin-left: 45px;
+        }
+
+        .row:nth-child(4) {
+            margin-left: 15px;
+        }
+
+        .key.space {
+            width: 300px;
+        }
+
+        .stats {
+            color: #888;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="text-display" id="textDisplay"></div>
+        
+        <div class="keyboard">
+            <div class="row">
+                <div class="key" data-key="q">Q</div>
+                <div class="key" data-key="w">W</div>
+                <div class="key" data-key="e">E</div>
+                <div class="key" data-key="r">R</div>
+                <div class="key" data-key="t">T</div>
+                <div class="key" data-key="y">Y</div>
+                <div class="key" data-key="u">U</div>
+                <div class="key" data-key="i">I</div>
+                <div class="key" data-key="o">O</div>
+                <div class="key" data-key="p">P</div>
+            </div>
+            <div class="row">
+                <div class="key" data-key="a">A</div>
+                <div class="key" data-key="s">S</div>
+                <div class="key" data-key="d">D</div>
+                <div class="key" data-key="f">F</div>
+                <div class="key" data-key="g">G</div>
+                <div class="key" data-key="h">H</div>
+                <div class="key" data-key="j">J</div>
+                <div class="key" data-key="k">K</div>
+                <div class="key" data-key="l">L</div>
+            </div>
+            <div class="row">
+                <div class="key" data-key="z">Z</div>
+                <div class="key" data-key="x">X</div>
+                <div class="key" data-key="c">C</div>
+                <div class="key" data-key="v">V</div>
+                <div class="key" data-key="b">B</div>
+                <div class="key" data-key="n">N</div>
+                <div class="key" data-key="m">M</div>
+            </div>
+            <div class="row">
+                <div class="key space" data-key=" ">SPACE</div>
+            </div>
+        </div>
+
+        <div class="stats" id="stats">Press any key to start typing!</div>
+    </div>
+
+    <script>
+        const texts = [
+            "the quick brown fox jumps over the lazy dog",
+            "pack my box with five dozen liquor jugs",
+            "how vexingly quick daft zebras jump",
+            "the five boxing wizards jump quickly"
+        ];
+
+        let currentText = texts[Math.floor(Math.random() * texts.length)];
+        let currentIndex = 0;
+        let correctKeys = 0;
+        let totalKeys = 0;
+
+        function displayText() {
+            const display = document.getElementById('textDisplay');
+            display.innerHTML = '';
+            
+            for (let i = 0; i < currentText.length; i++) {
+                const span = document.createElement('span');
+                span.className = 'letter';
+                span.textContent = currentText[i];
+                
+                if (i < currentIndex) {
+                    span.classList.add('typed');
+                } else if (i === currentIndex) {
+                    span.classList.add('current');
+                } else {
+                    span.classList.add('untyped');
+                }
+                
+                display.appendChild(span);
+            }
+        }
+
+        function highlightKey(key) {
+            const keyElement = document.querySelector(`[data-key="${key.toLowerCase()}"]`);
+            if (keyElement) {
+                keyElement.classList.add('active');
+                setTimeout(() => {
+                    keyElement.classList.remove('active');
+                }, 100);
+            }
+        }
+
+        function updateStats() {
+            const stats = document.getElementById('stats');
+            if (currentIndex === currentText.length) {
+                const accuracy = Math.round((correctKeys / totalKeys) * 100);
+                stats.textContent = `Completed! Accuracy: ${accuracy}% - Press any key to start a new phrase`;
+            } else {
+                stats.textContent = `Progress: ${currentIndex}/${currentText.length}`;
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (currentIndex >= currentText.length) {
+                currentText = texts[Math.floor(Math.random() * texts.length)];
+                currentIndex = 0;
+                correctKeys = 0;
+                totalKeys = 0;
+            }
+
+            const expectedChar = currentText[currentIndex];
+            const typedChar = e.key;
+
+            highlightKey(typedChar);
+
+            if (typedChar === expectedChar) {
+                correctKeys++;
+                currentIndex++;
+            }
+            
+            totalKeys++;
+            displayText();
+            updateStats();
+        });
+
+        displayText();
+        updateStats();
+    </script>
+</body>
+</html>
