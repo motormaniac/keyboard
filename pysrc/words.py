@@ -16,12 +16,12 @@ ADDED_CHARACTERS = [
     ["x", "q"],
 ]
 
-WORD_MAX = 100 # maximum words to generate per line. -1 means unlimited
+WORD_MAX = 500 # maximum words to generate per line. -1 means unlimited
 current_characters:list[str] = []
 output_lines:list[str] = []
 
 word_list = []
-with open("data/words.txt", "r") as f:
+with open("data/google-10000-english-no-swears.txt", "r") as f:
     word_list = [word.strip() for word in f.readlines()]
     shuffle(word_list)
 

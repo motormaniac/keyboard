@@ -40,6 +40,11 @@
             text-align: center;
         }
 
+        .word {
+            display: inline-block;
+            white-space: nowrap;
+        }
+
         .letter.typed {
             color: #4ade80;
         }
@@ -77,13 +82,14 @@
             border: 2px solid #5a5a5a;
             border-radius: 6px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: #fff;
+            color:white;
             font-weight: bold;
-            font-size: 16px;
+            font-size:16px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            transition: all 0.05s;
+            transition: all 0.1s;
         }
 
         .key.active {
@@ -91,6 +97,18 @@
             border-color: #60a5fa;
             transform: translateY(2px);
             box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .display-letter {
+            font-weight: bold;
+            color:gray;
+            font-size:12px;
+            transition:all 0.1s;
+        }
+        
+        .display-letter.active {
+            color:white;
+            font-size:16px;
         }
 
         .row:nth-child(2) {
@@ -105,7 +123,7 @@
             margin-left: 15px;
         }
 
-        .key.space {
+        .key.switch {
             width: 300px;
         }
 
@@ -114,47 +132,106 @@
             font-size: 18px;
             margin-top: 20px;
         }
+        .pop-up-container{
+            width:100vw;
+            height:100vh;
+            visibility: visible;
+            position:absolute;
+            display:flex;
+            align-content: center;
+            justify-content: center;
+            background-color: rgba(0,0,0,0.3);
+        }
+        .pop-up-content {
+            width:50vw;
+            height:fit-content;
+            padding:20px;
+            color:white;
+            font-size: 16px;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body>
+    <div class="pop-up-container" id="pop-up-container">
+        <div class="pop-up-content">
+            Please Disable Kanata / Switch to QWERTY (press any key to continue)
+        </div>
+    </div>
     <div class="container">
         <div class="text-display" id="textDisplay"></div>
+
         
-        <div class="keyboard">
+        <div class="keyboard" id="keyboard">
             <div class="row">
-                <div class="key" data-key="q">Q</div>
-                <div class="key" data-key="w">W</div>
-                <div class="key" data-key="e">E</div>
-                <div class="key" data-key="r">R</div>
-                <div class="key" data-key="t">T</div>
-                <div class="key" data-key="y">Y</div>
-                <div class="key" data-key="u">U</div>
-                <div class="key" data-key="i">I</div>
-                <div class="key" data-key="o">O</div>
-                <div class="key" data-key="p">P</div>
+                <div class="key" data-key="q">
+                    <div class="display-letter">Z</div>
+                    <div class="display-letter">K</div>
+                </div>
+                <div class="key" data-key="w">
+                    <div class="display-letter">Y</div>
+                    <div class="display-letter">W</div>
+                </div>
+                <div class="key" data-key="e">
+                    <div class="display-letter">D</div>
+                    <div class="display-letter">O</div>
+                </div>
+                <div class="key" data-key="r">
+                    <div class="display-letter">L</div>
+                    <div class="display-letter">F</div>
+                </div>
+                <div class="key" data-key="t">
+                    <div class="display-letter">M</div>
+                    <div class="display-letter">C</div>
+                </div>
             </div>
             <div class="row">
-                <div class="key" data-key="a">A</div>
-                <div class="key" data-key="s">S</div>
-                <div class="key" data-key="d">D</div>
-                <div class="key" data-key="f">F</div>
-                <div class="key" data-key="g">G</div>
-                <div class="key" data-key="h">H</div>
-                <div class="key" data-key="j">J</div>
-                <div class="key" data-key="k">K</div>
-                <div class="key" data-key="l">L</div>
+                <div class="key" data-key="a">SPC</div>
+                <div class="key" data-key="s">
+                    <div class="display-letter">E</div>
+                    <div class="display-letter">I</div>
+                </div>
+                <div class="key" data-key="d">
+                    <div class="display-letter">A</div>
+                    <div class="display-letter">T</div>
+                </div>
+                <div class="key" data-key="f">
+                    <div class="display-letter">S</div>
+                    <div class="display-letter">N</div>
+                </div>
+                <div class="key" data-key="g">
+                    <div class="display-letter">R</div>
+                    <div class="display-letter">H</div>
+                </div>
             </div>
             <div class="row">
-                <div class="key" data-key="z">Z</div>
-                <div class="key" data-key="x">X</div>
-                <div class="key" data-key="c">C</div>
-                <div class="key" data-key="v">V</div>
-                <div class="key" data-key="b">B</div>
-                <div class="key" data-key="n">N</div>
-                <div class="key" data-key="m">M</div>
+                <div class="key" data-key="z">
+                    <div class="display-letter">P</div>
+                    <div class="display-letter">U</div>
+                </div>
+                <div class="key" data-key="x">
+                    <div class="display-letter">B</div>
+                    <div class="display-letter">G</div>
+                </div>
+                <div class="key" data-key="c">
+                    <div class="display-letter">X</div>
+                    <div class="display-letter">Q</div>
+                </div>
+                <div class="key" data-key="v">
+                    <div class="display-letter">V</div>
+                    <div class="display-letter">J</div>
+                </div>
+                <div class="key" data-key="b">
+                    <div class="display-letter">,</div>
+                    <div class="display-letter">.</div>
+                </div>
             </div>
             <div class="row">
-                <div class="key space" data-key=" ">SPACE</div>
+                <div class="key switch">SWITCH</div>
             </div>
         </div>
 
@@ -162,41 +239,145 @@
     </div>
 
     <script>
-        const texts = [
-            "the quick brown fox jumps over the lazy dog",
-            "pack my box with five dozen liquor jugs",
-            "how vexingly quick daft zebras jump",
-            "the five boxing wizards jump quickly"
-        ];
+        const WORDS = ['satiates', 'entte', 'tennises', 'senates', 'taints', 'tie', 'ties', 'antistat', 'sateens', 'instates', 'tennantite', 'insistent', 'intens', 'taeniae', 'sensate', 'senit', 'ii', 'testiest', 'sennets', 'inanities', 'sestet', 'seat', 'tis', 'insensate', 'tins', 'tin', 'stannate', 'nasties', 'aine', 'seats', 'anesis', 'assi', 'ninnies', 'insite', 'iana', 'tenne', 'stenia', 'attentate', 'entente', 'insense', 'intis', 'sanai', 'saanen', 'insentient', 'taenite', 'assent', 'insanest', 'tattiness', 'tenseness', 'sassies', 'tanist', 'insets', 'ean', 'intentness', 'sennit', 'antistatist', 'sennet', 'attain', 'innateness', 'nese', 'tininesses', 'stane', 'seise', 'sensates', 'tintie', 'eats', 'sati', 'ainee', 'antenna', 'tanists', 'entia', 'settees', 'tineas', 'intensities', 'nastinesses', 'setenant', 'isnt', 'tsantsa', 'niais', 'tiniest', 'tannin', 'tinniest', 'teest', 'instate', 'ate', 'taen', 'easinesses', 'easiness', 'astatines', 'tansies', 'eten', 'sienna', 'ensete', 'tensest', 'saeta', 'intine', 'tanna', 'sannaite', 'ansa', 'satiate', ]
+        const MIRROR_QWERTY = {
+            "q":["q", "p"],
+            "w":["w", "o"],
+            "e":["e", "i"],
+            "r":["r", "u"],
+            "t":["t", "y"],
 
-        let currentText = texts[Math.floor(Math.random() * texts.length)];
+            "a":["a", " "],
+            "s":["s", "l"],
+            "d":["d", "k"],
+            "f":["f", "j"],
+            "g":["g", "h"],
+
+            "z":["z", "/"],
+            "x":["x", "."],
+            "c":["c", ","],
+            "v":["v", "m"],
+            "b":["b", "n"],
+        }
+        const CUSTOM_MAP = {
+            "q":["z", "k"],
+            "w":["y", "w"],
+            "e":["d", "o"],
+            "r":["l", "f"],
+            "t":["m", "c"],
+
+            "a":[" ", " "],
+            "s":["e", "i"],
+            "d":["a", "t"],
+            "f":["s", "n"],
+            "g":["r", "h"],
+
+            "z":["p", "u"],
+            "x":["b", "g"],
+            "c":["x", "q"],
+            "v":["v", "j"],
+            "b":[",", "."],
+        }
+        const KEY_MAP = CUSTOM_MAP
+        const WORDS_AMOUNT = 10; // how many words to choose each round
+        let currentText = ""
+        chooseWords()
+        let popUpVisible = true //if the pop up box is visible
         let currentIndex = 0;
         let correctKeys = 0;
         let totalKeys = 0;
+        let currentLayer = 0; // 0 based indexing
+
+        // function setKeyboard() {
+        //     const keyboard = document.getElementById("keyboard")
+        //     const row1 = document.createElement("div")
+        //     ["q", "w", "e", "r", "t"].forEach((letter, i) => {
+        //         const newKey = document.createElement("div")
+        //     })
+        //     row1.appendChild()
+        // }
+
+        function chooseWords() {
+            newWordsList = []
+            for (let i=0; i<WORDS_AMOUNT; i++) {
+                const newWord = WORDS[Math.floor(Math.random() * WORDS.length)];
+                newWordsList.push(newWord)
+            }
+            currentText = newWordsList.join(" ")
+        }
 
         function displayText() {
             const display = document.getElementById('textDisplay');
             display.innerHTML = '';
             
-            for (let i = 0; i < currentText.length; i++) {
-                const span = document.createElement('span');
-                span.className = 'letter';
-                span.textContent = currentText[i];
+            const words = currentText.split(" ");
+            let charIndex = 0;
+            
+            words.forEach((word, wordIdx) => {
+                const wordSpan = document.createElement('span');
+                wordSpan.className = 'word';
                 
-                if (i < currentIndex) {
-                    span.classList.add('typed');
-                } else if (i === currentIndex) {
-                    span.classList.add('current');
-                } else {
-                    span.classList.add('untyped');
+                for (let i = 0; i < word.length; i++) {
+                    const span = document.createElement('span');
+                    span.className = 'letter';
+                    span.textContent = word[i];
+                    
+                    if (charIndex < currentIndex) {
+                        span.classList.add('typed');
+                    } else if (charIndex === currentIndex) {
+                        span.classList.add('current');
+                    } else {
+                        span.classList.add('untyped');
+                    }
+                    
+                    wordSpan.appendChild(span);
+                    charIndex++;
                 }
                 
-                display.appendChild(span);
+                display.appendChild(wordSpan);
+                
+                // Add space between words
+                if (wordIdx < words.length - 1) {
+                    const spaceSpan = document.createElement('span');
+                    spaceSpan.className = 'letter';
+                    spaceSpan.textContent = ' ';
+                    
+                    if (charIndex < currentIndex) {
+                        spaceSpan.classList.add('typed');
+                    } else if (charIndex === currentIndex) {
+                        spaceSpan.classList.add('current');
+                    } else {
+                        spaceSpan.classList.add('untyped');
+                    }
+                    
+                    display.appendChild(spaceSpan);
+                    charIndex++;
+                }
+            });
+        }
+
+        function setInitialLayerActive() {
+            document.querySelectorAll(".display-letter:nth-child(1)")
+            .forEach((displayLetter) => {
+                displayLetter.classList.add("active")
+            })
+        }
+        setInitialLayerActive()
+
+        function switchLayer(layerNum) {
+            document.querySelectorAll('.display-letter')
+            .forEach((displayLetter) => {
+                displayLetter.classList.toggle("active")
+            })
+            if (currentLayer === 0) {
+                currentLayer = 1
+            } else {
+                currentLayer = 0
             }
         }
 
-        function highlightKey(key) {
-            const keyElement = document.querySelector(`[data-key="${key.toLowerCase()}"]`);
+        function highlightKey(keyCode) {
+            const keyElement = document.querySelector(`[data-key="${keyCode}"]`);
             if (keyElement) {
                 keyElement.classList.add('active');
                 setTimeout(() => {
@@ -215,18 +396,32 @@
             }
         }
 
-        document.addEventListener('keydown', (e) => {
+        document.addEventListener('keydown', (keyEvent) => {
+            if (keyEvent.key === " ") {
+                keyEvent.preventDefault() // prevent the screen from scrolling when space is pressed
+            }
+            if (popUpVisible === true) {
+                popUpVisible = false
+                const popUpContainer = document.getElementById("pop-up-container")
+                popUpContainer.style.visibility = "hidden"
+                return
+            }
+            console.log()
+            if (keyEvent.key === " ") {
+                switchLayer()
+                return
+            }
             if (currentIndex >= currentText.length) {
-                currentText = texts[Math.floor(Math.random() * texts.length)];
+                chooseWords()
                 currentIndex = 0;
                 correctKeys = 0;
                 totalKeys = 0;
             }
 
             const expectedChar = currentText[currentIndex];
-            const typedChar = e.key;
+            const typedChar = KEY_MAP[keyEvent.key][currentLayer];
 
-            highlightKey(typedChar);
+            highlightKey(keyEvent.key);
 
             if (typedChar === expectedChar) {
                 correctKeys++;
