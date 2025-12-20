@@ -52,8 +52,8 @@ for new_characters in ADDED_CHARACTERS:
             continue
         this_line += f"'{word}', "
         word_count += 1
-    output_lines.append(f"\n\t[{this_line}],")
+    output_lines.append(f"\n\t'{", ".join(new_characters)}': [{this_line}],")
     print(word_count)
 
 with open("data/practice_words.txt", "w") as f:
-    f.write(f"[{"".join(output_lines)}\n]")
+    f.write(f"{{{"".join(output_lines)}\n}}")
