@@ -17,13 +17,14 @@ ADDED_CHARACTERS = [
 ]
 
 WORD_MAX = 500 # maximum words to generate per line. -1 means unlimited
+MIN_WORD_LEN = 3
 current_characters:list[str] = []
 output_lines:list[str] = []
 
 word_list = []
 with open("data/google-10000-english-no-swears.txt", "r") as f:
     word_list = [word.strip() for word in f.readlines()]
-    shuffle(word_list)
+    # shuffle(word_list)
 
 # each word is separated by a newline
 for new_characters in ADDED_CHARACTERS:
@@ -35,6 +36,8 @@ for new_characters in ADDED_CHARACTERS:
         if not WORD_MAX == -1 and word_count >= WORD_MAX:
             break
         word = word.strip()
+        if len(word) < MIN_WORD_LEN:
+            continue
         only_has_allowed_letters = True
         # check that the word contains only allowed characters
         for char in word:
