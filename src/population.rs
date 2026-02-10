@@ -10,7 +10,7 @@ pub struct Population {
 
 const POPULATION_SIZE:usize = 100000;
 // top_percentile = what percent of top performers from this generation move to the next
-const TOP_PERCENTILE:f64 = 0.10;
+const TOP_PERCENTILE:f64 = 0.1;
 /// random_percentile = what percent of random parents to select
 const RANDOM_PERCENTILE:f64 = 0.4;
 // How many ADDITIONAL random parents to choose for crossover (the top percentile is already included for crossover)

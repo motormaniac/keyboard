@@ -53,12 +53,12 @@ def visualize_keymap() -> None:
     layout5:list[str] = "V W _ X _ SPACE T E H D P F O R M K G J Q Z SPACE A I S N B Y U L C".split(" ")
     layout6:list[str] = "P U Q V X SPACE E A R S B Y D L M K G _ Z _ SPACE T I N H J W O F C".split(" ")
     layout7:list[str] = "P B X Z _ SPACE E A S R V Y D L M U G Q J _ SPACE I T N H K W O F C".split(" ")
+    layout_new1:list[str] = "O U P M F E A SPACE T R B V H L C W X _ J Q N I SPACE S D Z _ K Y G".split(" ")
     with open("data/layout_visual.md", "w") as f:
-        content = "\n\n".join([get_layout_visual(x) for x in [layout2, layout3, layout4, layout5, layout6, layout7]])
-        f.write(content)
+        f.write(get_layout_visual(layout_new1))
 
 def write_edited_time_data() -> None:
     data = fileio.read_time_data("time_data/time_data_combined.txt")
     fileio.write_table("data/edited_time_data.txt", data)
 
-write_edited_time_data()
+visualize_keymap()

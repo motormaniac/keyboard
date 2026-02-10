@@ -82,6 +82,25 @@ class CombinationKey:
             ) for key1, subdict in self._combination_key_distances.items()]\
         )
 
+    # costs of different key actions
+    # switching layers is very costly
+    SWITCH_KEY = 3
+    # using the same finger
+    SAME_FINGER = 2
+    # pressing adjacent keys with the index finger
+    ADJACENT_INDEX_FINGER = 3
+    # prioritize the homerow
+    HOME_ROW_PRIORITY = 1
+    # jumping just one row
+    CHANGE_ONE_ROW = 1
+    # jumps of two rows
+    CHANGE_TWO_ROWS = 3
+    # deprioritize having short fingers above long fingers because it is uncomfortable
+    SHORT_FINGER_ABOVE_LONG_FINGER = 2
+    # I don't like combinations of my fingers on the bottom and middle row
+    # because of staggered keyboard
+    BOTTOM_MIDDLE_ROW_COMBINATION = 2
+    
     # Keycode is 110.
     # first 0-2 is row bottom to top, second 0-4 is column left to right, third character 0-1 is swap layer
     def calc_key_distance(self, key1:str, key2:str) -> float:
@@ -98,14 +117,14 @@ class CombinationKey:
         key2_col = int(key2[1])
 
         if key1[2] != key2[2]: # Using the switch key has a high distance
-            distance += 3
+            distance += self.SWITCH_KEY
         else:
             if key1_col == key2_col:
                 # using the same finger
-                distance += 2
+                distance += self.SAME_FINGER
             elif (key1_col == 3 and key2_col == 4) or (key1_col == 4 and key2_col == 3):
-                # Using index twice on adjacent keys
-                distance += 3
+                # Using index finger twice on adjacent keys
+                distance += self.ADJACENT_INDEX_FINGER
 
         # locational constraints
 
@@ -114,11 +133,11 @@ class CombinationKey:
         # same row is no cost
         if key1_row != 1 or key2_row != 1:
             # prioritize the homerow
-            distance += 1
+            distance += self.HOME_ROW_PRIORITY
         if abs(key1_row - key2_row) == 1:
-            distance += 1
+            distance += self.CHANGE_ONE_ROW
         elif abs(key1_row - key2_row) == 2: # I really don't want to jump 2 rows
-            distance += 3
+            distance += self.CHANGE_TWO_ROWS
 
         # long fingers = middle and index (2,3,4)
         # short fingers = pinkie and ring (0,1)
@@ -126,18 +145,18 @@ class CombinationKey:
         # it is uncomfortable to have short fingers above long fingers
         if key1_col in [0,1] and key2_col in [2,3,4]\
         and key1_row > key2_row:
-            distance += 2
+            distance += self.SHORT_FINGER_ABOVE_LONG_FINGER
         # same thing but switch the order
         elif key2_col in [0,1] and key1_col in [2,3,4]\
         and key2_row > key1_row:
-            distance += 2
+            distance += self.SHORT_FINGER_ABOVE_LONG_FINGER
 
         # I don't like combinations of my fingers on the bottom and middle row
         # because of staggered keyboard
         if key1_row == 0 and key2_row == 1 and key2_col - key1_col == 1:
-            distance += 2
+            distance += self.BOTTOM_MIDDLE_ROW_COMBINATION
         elif key2_row == 0 and key1_row == 1 and key1_col - key2_col == 1:
-            distance += 2
+            distance += self.BOTTOM_MIDDLE_ROW_COMBINATION
 
         return distance
 
