@@ -1,10 +1,9 @@
 import csv
 import sqlite3
 from pathlib import Path
-from typing import Optional
 
 OUTPUT_DB = Path(__file__).with_name("keystroke_table.db")
-OUTPUT_CSV = Path(__file__).with_name("keystrokes_export.csv")
+OUTPUT_CSV = Path(__file__).with_name("keystroke_table.csv")
 
 
 def init_db() -> None:
@@ -14,65 +13,27 @@ def init_db() -> None:
             CREATE TABLE IF NOT EXISTS keystrokes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 key TEXT NOT NULL,
-                dt_seconds REAL,
-                hold_seconds REAL
+                press_ts REAL NOT NULL,
+                release_ts REAL
             )
             """
         )
 
-        # Migrate older schemas that enforced NOT NULL on duration columns.
-        columns = {
-            row[1]: {"type": row[2], "notnull": row[3], "pk": row[5]}
-            for row in conn.execute("PRAGMA table_info(keystrokes)")
-        }
-        needs_rebuild = False
-        if "dt_seconds" in columns and columns["dt_seconds"]["notnull"] == 1:
-            needs_rebuild = True
-        if "hold_seconds" in columns and columns["hold_seconds"]["notnull"] == 1:
-            needs_rebuild = True
 
-        if needs_rebuild:
-            conn.execute(
-                """
-                CREATE TABLE keystrokes_new (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    key TEXT NOT NULL,
-                    dt_seconds REAL,
-                    hold_seconds REAL
-                )
-                """
-            )
-            conn.execute(
-                """
-                INSERT INTO keystrokes_new (id, key, dt_seconds, hold_seconds)
-                SELECT id, key, dt_seconds, hold_seconds
-                FROM keystrokes
-                """
-            )
-            conn.execute("DROP TABLE keystrokes")
-            conn.execute("ALTER TABLE keystrokes_new RENAME TO keystrokes")
-            conn.execute(
-                "UPDATE sqlite_sequence SET seq = (SELECT COALESCE(MAX(id), 0) FROM keystrokes) WHERE name = 'keystrokes'"
-            )
-
-def append_db_row(
-    key_string: str,
-    dt_seconds: Optional[float],
-    hold_seconds: Optional[float] = None,
-) -> int:
+def append_db_row(key_string: str, press_ts: float, release_ts: float | None = None) -> int:
     with sqlite3.connect(OUTPUT_DB) as conn:
         cursor = conn.execute(
-            "INSERT INTO keystrokes (key, dt_seconds, hold_seconds) VALUES (?, ?, ?)",
-            (key_string, dt_seconds, hold_seconds),
+            "INSERT INTO keystrokes (key, press_ts, release_ts) VALUES (?, ?, ?)",
+            (key_string, press_ts, release_ts),
         )
         return int(cursor.lastrowid)
 
 
-def update_hold_seconds(row_id: int, hold_seconds: Optional[float]) -> None:
+def update_release_ts(row_id: int, release_ts: float | None) -> None:
     with sqlite3.connect(OUTPUT_DB) as conn:
         conn.execute(
-            "UPDATE keystrokes SET hold_seconds = ? WHERE id = ?",
-            (hold_seconds, row_id),
+            "UPDATE keystrokes SET release_ts = ? WHERE id = ?",
+            (release_ts, row_id),
         )
 
 
@@ -81,12 +42,12 @@ def export_view_to_csv(csv_path: str | Path) -> Path:
     out_path = Path(csv_path)
     with sqlite3.connect(OUTPUT_DB) as conn:
         rows = conn.execute(
-            "SELECT id, key, dt_seconds, hold_seconds FROM keystrokes ORDER BY id"
+            "SELECT id, key, press_ts, release_ts FROM keystrokes ORDER BY id"
         ).fetchall()
 
     with out_path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["id", "key", "dt_seconds", "hold_seconds"])
+        writer.writerow(["id", "key", "press_ts", "release_ts"])
         writer.writerows(rows)
 
     return out_path

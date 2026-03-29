@@ -1,17 +1,41 @@
 import time
-from typing import Optional
 
 from pynput import keyboard
-from keystroke_db import OUTPUT_DB, append_db_row, init_db, update_hold_seconds
+from winotify import Notification
+from keystroke_db import OUTPUT_DB, append_db_row, init_db, update_release_ts
 
 
-IDLE_RESET_SECONDS = 1.0 # if the person doesn't type for this long, reset the timer to 0 for the next keypress
-DEBUG = True
+Debug = True
 
-last_key_time: float | None = None
 pressed_modifiers: set[str] = set()
-active_presses: dict[str, tuple[float, int]] = {}
+active_presses: dict[str, int] = {}
 
+
+def notify_canceled(reason: str) -> None:
+    """Send a Windows toast when the logger is canceled."""
+    try:
+        toast = Notification(
+            app_id="Keystroke Logger",
+            title="Keystroke Logger Stopped",
+            msg=f"Canceled: {reason}",
+            duration="short",
+        )
+        toast.show()
+    except Exception as e:
+        print(f"Unable to send Windows notification: {e}")
+
+def notify_started() -> None:
+    """Send a Windows toast when the logger starts."""
+    try:
+        toast = Notification(
+            app_id="Keystroke Logger",
+            title="Keystroke Logger Started",
+            msg="Press Ctrl+Shift+Alt+F12 to stop.",
+            duration="short",
+        )
+        toast.show()
+    except Exception as e:
+        print(f"Unable to send Windows notification: {e}")
 
 def key_token(key: keyboard.Key | keyboard.KeyCode) -> str:
     """Build a stable token so press/release for the same key can be matched.
@@ -93,8 +117,6 @@ def update_modifier_state_on_release(key: keyboard.Key | keyboard.KeyCode) -> No
 
 
 def on_press(key: keyboard.Key | keyboard.KeyCode) -> bool | None:
-    global last_key_time
-
     try:
         update_modifier_state_on_press(key)
 
@@ -103,21 +125,13 @@ def on_press(key: keyboard.Key | keyboard.KeyCode) -> bool | None:
         if token in active_presses:
             return None
 
-        now = time.perf_counter()
-        if last_key_time is None:
-            delta: Optional[float] = None
-        else:
-            elapsed = now - last_key_time
-            delta = None if elapsed > IDLE_RESET_SECONDS else elapsed
+        press_ts = time.time()
 
         key_string = normalize_key(key)
-        row_id = append_db_row(key_string, delta, None)
-        active_presses[token] = (now, row_id)
-        if DEBUG:
-            dt_display = "null" if delta is None else f"{delta:.6f}"
-            print(f"{key_string:>12} | dt={dt_display} | hold=null")
-
-        last_key_time = now
+        row_id = append_db_row(key_string, press_ts, None)
+        active_presses[token] = row_id
+        if Debug:
+            print(f"{key_string:>12} | press_ts={press_ts:.6f} | release_ts=null")
 
         # Quit when Ctrl+Shift+Alt+F12 is pressed.
         if (
@@ -127,6 +141,7 @@ def on_press(key: keyboard.Key | keyboard.KeyCode) -> bool | None:
             and "alt" in pressed_modifiers
         ):
             print("Ctrl+Shift+Alt+F12 detected. Stopping listener.")
+            notify_canceled("Ctrl+Shift+Alt+F12")
             return False
 
         return None
@@ -136,28 +151,34 @@ def on_press(key: keyboard.Key | keyboard.KeyCode) -> bool | None:
 def on_release(key: keyboard.Key | keyboard.KeyCode) -> None:
     try:
         token = key_token(key)
-        press_info = active_presses.pop(token, None)
-        if press_info is not None:
-            press_time, row_id = press_info
-            hold_seconds = max(0.0, time.perf_counter() - press_time)
-            update_hold_seconds(row_id, hold_seconds)
-            if DEBUG:
+        row_id = active_presses.pop(token, None)
+        if row_id is not None:
+            release_ts = time.time()
+            update_release_ts(row_id, release_ts)
+            if Debug:
                 key_string = normalize_key(key)
-                print(f"{key_string:>12} | hold={hold_seconds:.6f}")
+                print(f"{key_string:>12} | release_ts={release_ts:.6f}")
 
         update_modifier_state_on_release(key)
     except Exception as e:
         print(f"Error processing key release: {e}")
 
 
-def main() -> None:
+def main(debug: bool = True) -> None:
+    global Debug
+    Debug = debug
     init_db()
+    notify_started()
     print("Listening for key presses. Press Ctrl+Shift+Alt+F12 to quit.")
-    print(f"Saving table to: {OUTPUT_DB} (table: keystrokes)")
-    if DEBUG:
-        print("Columns: key, dt_seconds, hold_seconds")
-    with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
-        listener.join()
+    if Debug:
+        print(f"Saving table to: {OUTPUT_DB} (table: keystrokes)")
+        print("Columns: key, press_ts, release_ts")
+    try:
+        with keyboard.Listener(on_press=on_press, on_release=on_release) as listener:
+            listener.join()
+    except KeyboardInterrupt:
+        notify_canceled("KeyboardInterrupt")
+        print("Keystroke logger interrupted.")
 
 if __name__ == "__main__":
-    main()
+    main(debug=True)

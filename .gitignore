@@ -9,5 +9,7 @@
 
 __pycache__/
 
+# Data collected from pykeystroke
 pykeystroke/keystroke_table.db
+pykeystroke/keystroke_table.db-journal
 pykeystroke/keystroke_table.csv
