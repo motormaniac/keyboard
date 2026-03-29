@@ -8,3 +8,6 @@
 #/target
 
 __pycache__/
+
+pykeystroke/keystroke_table.db
+pykeystroke/keystroke_table.csv
