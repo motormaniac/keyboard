@@ -1,9 +1,9 @@
 import sys
 sys.path.append(".")
 
-from pysrc import keymap
-from pysrc import lettermap
-from pysrc import fileio
+import keymap
+import lettermap
+import fileio
 
 def write_single_key_data() -> None:
     with open ("data/single_key_data.txt", "w") as f:
