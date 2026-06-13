@@ -164,9 +164,9 @@ def on_release(key: keyboard.Key | keyboard.KeyCode) -> None:
         print(f"Error processing key release: {e}")
 
 
-def main(debug: bool = True) -> None:
+def main(verbose: bool = True) -> None:
     global Debug
-    Debug = debug
+    Debug = verbose
     init_db()
     notify_started()
     print("Listening for key presses. Press Ctrl+Shift+Alt+F12 to quit.")
@@ -181,4 +181,4 @@ def main(debug: bool = True) -> None:
         print("Keystroke logger interrupted.")
 
 if __name__ == "__main__":
-    main(debug=True)
+    main(verbose=True)

@@ -1,5 +1,8 @@
 # Keystroke Tracker
 
+## UV
+Use the UV Python package manager
+
 ## Usage
 This script is used for windows OS
 - Press Ctrl+Shift+Alt+F12 to cancel the script while it's running
@@ -7,6 +10,14 @@ This script is used for windows OS
 ## Import the necessary python libraries through pip:
 - pynput
 - winotify
+
+## Setting Up UV
+```
+cd ./pykeystroke
+uv install
+// set up the .venv
+uv run src/main.py
+```
 
 ## Setting up Task Manager
 Set up a task to run the script every time you **startup** your computer (**waking up from sleep doesn't count**)
@@ -22,10 +33,9 @@ Set up a task to run the script every time you **startup** your computer (**waki
     - Go to the Actions menu
     - Create New Action
     - Set mode to `Start a Program`
-    - Find your pythonw.exe (usually found in C:\Users\darri\AppData\Local\Programs\Python)
-    - Set Program/script to the full pythonw.exe path
-    - Find the location of the `main.pyw` script in this folder
-    - In `Add arguments` paste the entire file path of `main.pyw`
+    - Set Start Program to the pythonw.exe within this venv
+        - Found in .venv/Scripts/pythonw.exe
+    - Set the optional parameter to the absolute path of src/main.pyw
 6. Set Conditions
     - Make sure both power and idle options are **OFF**
         - "Start the task only if the computer is idle"
